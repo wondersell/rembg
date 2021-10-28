@@ -1,0 +1,17 @@
+name: Deploy to Heroku Prod
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Prevent creating shallow copy
+
+    - name: Deploy via git push to Heroku repo
+      run: git push -f https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git master:master
