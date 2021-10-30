@@ -4,7 +4,7 @@ alerts:
 name: wondercard-remove-background
 region: sfo
 services:
-- dockerfile_path: Dockerfile_webapp
+- dockerfile_path: Dockerfile
   github:
     branch: master
     deploy_on_push: true
