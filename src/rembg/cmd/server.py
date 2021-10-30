@@ -14,7 +14,9 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def index():
     if "Apikey" not in request.headers.keys():
-        return {"error": f"Авторизация не удалась: не найден ключ API, {list(request.headers.keys())}"}, 401
+        return {
+            "error": f"Авторизация не удалась: не найден ключ API, {list(request.headers.keys())}"
+        }, 401
 
     if request.headers["Apikey"] != os.environ["API_KEY"]:
         return {"error": "Авторизация не удалась: ключ API не подошел"}, 401
