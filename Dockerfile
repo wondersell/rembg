@@ -1,7 +1,9 @@
-FROM nvidia/cuda
+FROM python:3.8-slim-buster
+COPY requirements.txt ./
+RUN apt-get update && \
+  apt-get --no-install-recommends --assume-yes install build-essential git
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip python3-dev llvm llvm-dev
-RUN pip3 install rembg
+ADD src /srv
 
-ENTRYPOINT ["rembg"]
-CMD []
+WORKDIR /srv
