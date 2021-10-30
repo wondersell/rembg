@@ -4,8 +4,6 @@ services:
   web:
     build: ./
     restart: always
-    #command: uwsgi --http :8000 --module rembg.cmd.server --workers 1 --threads 1
-    #command: python3 -m rembg.cmd.server
     command: waitress-serve --port=80 rembg.cmd.server:app
     volumes:
       - ./src:/srv:delegated
