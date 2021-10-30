@@ -4,6 +4,8 @@ services:
   web:
     build: ./
     restart: always
+    env_file:
+        - ./.env
     command: waitress-serve --port=80 rembg.cmd.server:app
     volumes:
       - ./src:/srv:delegated

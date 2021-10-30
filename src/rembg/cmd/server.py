@@ -2,8 +2,6 @@ import argparse
 import glob
 import os
 from io import BytesIO
-from urllib.parse import quote, unquote_plus
-from urllib.request import urlopen
 
 from flask import Flask, request, send_file
 from waitress import serve
@@ -15,27 +13,25 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    if "Apikey" not in request.headers.keys():
+        return {"error": f"Авторизация не удалась: не найден ключ API, {list(request.headers.keys())}"}, 401
+
+    if request.headers["Apikey"] != os.environ["API_KEY"]:
+        return {"error": "Авторизация не удалась: ключ API не подошел"}, 401
+
     file_content = ""
 
     if request.method == "POST":
         if "file" not in request.files:
-            return {"error": "missing post form param 'file'"}, 400
+            return {"error": "В запросе не передан обязательный параметр 'file'"}, 400
 
         file_content = request.files["file"].read()
 
     if request.method == "GET":
-        url = request.args.get("url", type=str)
-        if url is None:
-            return {"error": "missing query param 'url'"}, 400
-
-        url = unquote_plus(url)
-        if " " in url:
-            url = quote(url, safe="/:")
-
-        file_content = urlopen(url).read()
+        return {"error": "GET запросы не поддерживаются сервисом"}, 405
 
     if file_content == "":
-        return {"error": "File content is empty"}, 400
+        return {"error": "Содержимое файла оказалось пустым"}, 400
 
     alpha_matting = "a" in request.values
     af = request.values.get("af", type=int, default=240)
@@ -57,7 +53,7 @@ def index():
 
     if model not in model_choices:
         return {
-            "error": f"invalid query param 'model'. Available options are {model_choices}"
+            "error": f"Некорректный параметр 'model'. Доступные значения – {model_choices}"
         }, 400
 
     try:
@@ -77,7 +73,7 @@ def index():
         )
     except Exception as e:
         app.logger.exception(e, exc_info=True)
-        return {"error": "oops, something went wrong!"}, 500
+        return {"error": "Что-то пошло не так"}, 500
 
 
 def main():
