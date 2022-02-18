@@ -18,6 +18,27 @@ from tqdm import tqdm
 from . import data_loader, u2net
 
 
+def download_file_from_amazon(url, fname, destination):
+    head, tail = os.path.split(destination)
+    os.makedirs(head, exist_ok=True)
+
+    session = requests.Session()
+    response = session.get(url, stream=True)
+
+    total = int(response.headers.get("content-length", 0))
+
+    with open(destination, "wb") as file, tqdm(
+        desc=f"Downloading {tail} to {head}",
+        total=total,
+        unit="iB",
+        unit_scale=True,
+        unit_divisor=1024,
+    ) as bar:
+        for data in response.iter_content(chunk_size=1024):
+            size = file.write(data)
+            bar.update(size)
+
+
 def download_file_from_google_drive(id, fname, destination):
     head, tail = os.path.split(destination)
     os.makedirs(head, exist_ok=True)
@@ -56,51 +77,27 @@ def load_model(model_name: str = "u2net"):
 
     if model_name == "u2netp":
         net = u2net.U2NETP(3, 1)
-        path = os.environ.get(
-            "U2NETP_PATH",
-            os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")),
-        )
-        if (
-            not os.path.exists(path)
-            or hashfile(path) != "e4f636406ca4e2af789941e7f139ee2e"
-        ):
-            download_file_from_google_drive(
-                "1rbSTGKAE-MTxBYHd-51l2hMOQPT_7EPy",
-                "u2netp.pth",
-                path,
-            )
+
+        path = os.environ.get("U2NETP_PATH", os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")))
+
+        if not os.path.exists(path):
+            download_file_from_amazon("https://wondercard-files.s3.us-west-1.amazonaws.com/rembg/u2netp.pth", "u2netp.pth", path)
 
     elif model_name == "u2net":
         net = u2net.U2NET(3, 1)
-        path = os.environ.get(
-            "U2NET_PATH",
-            os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")),
-        )
-        if (
-            not os.path.exists(path)
-            or hashfile(path) != "347c3d51b01528e5c6c071e3cff1cb55"
-        ):
-            download_file_from_google_drive(
-                "1ao1ovG1Qtx4b7EoskHXmi2E9rp5CHLcZ",
-                "u2net.pth",
-                path,
-            )
+
+        path = os.environ.get("U2NET_PATH", os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")))
+
+        if not os.path.exists(path):
+            download_file_from_amazon("https://wondercard-files.s3.us-west-1.amazonaws.com/rembg/u2net.pth", "u2net.pth", path)
 
     elif model_name == "u2net_human_seg":
         net = u2net.U2NET(3, 1)
-        path = os.environ.get(
-            "U2NET_PATH",
-            os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")),
-        )
-        if (
-            not os.path.exists(path)
-            or hashfile(path) != "09fb4e49b7f785c9f855baf94916840a"
-        ):
-            download_file_from_google_drive(
-                "1-Yg0cxgrNhHP-016FPdp902BR-kSsA4P",
-                "u2net_human_seg.pth",
-                path,
-            )
+
+        path = os.environ.get("U2NET_PATH", os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")))
+
+        if not os.path.exists(path):
+            download_file_from_amazon("https://wondercard-files.s3.us-west-1.amazonaws.com/rembg/u2net_human_seg.pth", "u2net_human_seg.pth", path)
     else:
         print("Choose between u2net, u2net_human_seg or u2netp", file=sys.stderr)
 
