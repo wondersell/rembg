@@ -1,5 +1,6 @@
 import argparse
 import glob
+import logging
 import os
 from io import BytesIO
 
@@ -8,32 +9,55 @@ from waitress import serve
 
 from ..bg import remove
 
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler())
+
 app = Flask(__name__)
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     if "Apikey" not in request.headers.keys():
+        error = f"Авторизация не удалась: не найден ключ API, {list(request.headers.keys())}"
+
+        logger.error(error)
+
         return {
-            "error": f"Авторизация не удалась: не найден ключ API, {list(request.headers.keys())}"
+            "error": error
         }, 401
 
     if request.headers["Apikey"] != os.environ["API_KEY"]:
-        return {"error": "Авторизация не удалась: ключ API не подошел"}, 401
+        error = "Авторизация не удалась: ключ API не подошел"
+
+        logger.error(error)
+
+        return {"error":  "Авторизация не удалась: ключ API не подошел"}, 401
 
     file_content = ""
 
     if request.method == "POST":
         if "file" not in request.files:
-            return {"error": "В запросе не передан обязательный параметр 'file'"}, 400
+            error = "В запросе не передан обязательный параметр 'file'"
+
+            logger.error(error)
+
+            return {"error": error}, 400
 
         file_content = request.files["file"].read()
 
     if request.method == "GET":
-        return {"error": "GET запросы не поддерживаются сервисом"}, 405
+        error = "GET запросы не поддерживаются сервисом"
+
+        logger.error(error)
+
+        return {"error": error}, 405
 
     if file_content == "":
-        return {"error": "Содержимое файла оказалось пустым"}, 400
+        error = "Содержимое файла оказалось пустым"
+
+        logger.error(error)
+
+        return {"error": error}, 400
 
     alpha_matting = "a" in request.values
     af = request.values.get("af", type=int, default=240)
@@ -54,8 +78,12 @@ def index():
     model_choices = list(set(model_choices + ["u2net", "u2netp", "u2net_human_seg"]))
 
     if model not in model_choices:
+        error = f"Некорректный параметр 'model'. Доступные значения – {model_choices}"
+
+        logger.error(error)
+
         return {
-            "error": f"Некорректный параметр 'model'. Доступные значения – {model_choices}"
+            "error": error
         }, 400
 
     try:
@@ -75,6 +103,7 @@ def index():
         )
     except Exception as e:
         app.logger.exception(e, exc_info=True)
+
         return {"error": "Что-то пошло не так"}, 500
 
 
