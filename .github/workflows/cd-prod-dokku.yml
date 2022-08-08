@@ -7,7 +7,7 @@ on:
 
 jobs:
   check:
-    uses: wondersell/rembg/.github/workflows/lint_python.yml@master
+    uses: wondersell/rembg/.github/workflows/build-and-test.yml@master
 
   deploy:
     runs-on: ubuntu-latest
