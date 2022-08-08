@@ -22,16 +22,14 @@ def index():
 
         logger.error(error)
 
-        return {
-            "error": error
-        }, 401
+        return {"error": error}, 401
 
     if request.headers["Apikey"] != os.environ["API_KEY"]:
         error = "Авторизация не удалась: ключ API не подошел"
 
         logger.error(error)
 
-        return {"error":  "Авторизация не удалась: ключ API не подошел"}, 401
+        return {"error": "Авторизация не удалась: ключ API не подошел"}, 401
 
     file_content = ""
 
@@ -82,9 +80,7 @@ def index():
 
         logger.error(error)
 
-        return {
-            "error": error
-        }, 400
+        return {"error": error}, 400
 
     try:
         return send_file(

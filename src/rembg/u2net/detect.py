@@ -78,26 +78,47 @@ def load_model(model_name: str = "u2net"):
     if model_name == "u2netp":
         net = u2net.U2NETP(3, 1)
 
-        path = os.environ.get("U2NETP_PATH", os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")))
+        path = os.environ.get(
+            "U2NETP_PATH",
+            os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")),
+        )
 
         if not os.path.exists(path):
-            download_file_from_amazon("https://wondercard-files.s3.us-west-1.amazonaws.com/rembg/u2netp.pth", "u2netp.pth", path)
+            download_file_from_amazon(
+                "https://wondercard-files.s3.us-west-1.amazonaws.com/rembg/u2netp.pth",
+                "u2netp.pth",
+                path,
+            )
 
     elif model_name == "u2net":
         net = u2net.U2NET(3, 1)
 
-        path = os.environ.get("U2NET_PATH", os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")))
+        path = os.environ.get(
+            "U2NET_PATH",
+            os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")),
+        )
 
         if not os.path.exists(path):
-            download_file_from_amazon("https://wondercard-files.s3.us-west-1.amazonaws.com/rembg/u2net.pth", "u2net.pth", path)
+            download_file_from_amazon(
+                "https://wondercard-files.s3.us-west-1.amazonaws.com/rembg/u2net.pth",
+                "u2net.pth",
+                path,
+            )
 
     elif model_name == "u2net_human_seg":
         net = u2net.U2NET(3, 1)
 
-        path = os.environ.get("U2NET_PATH", os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")))
+        path = os.environ.get(
+            "U2NET_PATH",
+            os.path.expanduser(os.path.join("~", ".u2net", model_name + ".pth")),
+        )
 
         if not os.path.exists(path):
-            download_file_from_amazon("https://wondercard-files.s3.us-west-1.amazonaws.com/rembg/u2net_human_seg.pth", "u2net_human_seg.pth", path)
+            download_file_from_amazon(
+                "https://wondercard-files.s3.us-west-1.amazonaws.com/rembg/u2net_human_seg.pth",
+                "u2net_human_seg.pth",
+                path,
+            )
     else:
         print("Choose between u2net, u2net_human_seg or u2netp", file=sys.stderr)
 
