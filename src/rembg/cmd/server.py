@@ -10,7 +10,9 @@ from waitress import serve
 from ..bg import remove
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.StreamHandler())
+
+consoleHandler = logging.StreamHandler()
+logger.addHandler(consoleHandler)
 
 app = Flask(__name__)
 
